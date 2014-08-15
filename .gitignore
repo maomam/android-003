@@ -15,6 +15,7 @@ target
 .recommenders
 .metadata
 .gradle
+classes
 bin
 .DS_Store
 build
