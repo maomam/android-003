@@ -1,5 +1,6 @@
 package org.magnum.mobilecloud.video.controller;
 
+import com.google.common.collect.Lists;
 import org.magnum.mobilecloud.video.client.VideoSvcApi;
 import org.magnum.mobilecloud.video.repository.Video;
 import org.magnum.mobilecloud.video.repository.VideoRepository;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Collection;
+
 @Controller
 public class VideoController {
 
@@ -19,22 +22,11 @@ public class VideoController {
     @Autowired
     private VideoRepository videoRepository;
 
-//    /**
-//     * Набор добавленных записей.
-//     * Используем специальный тип коллекции, которая корректно работает
-//     * в многопоточной среде.
-//     */
-//    private Map<Long,Video> videos = new ConcurrentHashMap<>();
-
-//    /**
-//     * Запрос на все существующие записи
-//     * @return Набор добавленных записей
-//     */
-//    @ResponseBody
-//    @RequestMapping(value = VideoSvcApi.VIDEO_SVC_PATH, method = RequestMethod.GET)
-//    public Collection<Video> getVideoList() {
-//        return videos.values();
-//    }
+    @ResponseBody
+    @RequestMapping(value = VideoSvcApi.VIDEO_SVC_PATH, method = RequestMethod.GET)
+    public Collection<Video> getVideoList() {
+        return Lists.newArrayList(videoRepository.findAll());
+    }
 
     /**
      * Добавляет в набор новый объект
