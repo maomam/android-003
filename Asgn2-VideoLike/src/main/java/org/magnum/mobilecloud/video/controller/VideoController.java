@@ -6,11 +6,9 @@ import org.magnum.mobilecloud.video.repository.Video;
 import org.magnum.mobilecloud.video.repository.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
 
 @Controller
@@ -44,6 +42,21 @@ public class VideoController {
         videoRepository.save(video);
 
         return video;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = VideoSvcApi.VIDEO_SVC_PATH + "/{id}", method = RequestMethod.GET)
+    public Video getVideoById(
+            @PathVariable("id") long id,
+            HttpServletResponse response) {
+
+        Video video = videoRepository.findOne(id);
+        if (null == video) {
+            response.setStatus(404);
+        }
+
+        return video;
+
     }
 
 //    @RequestMapping(value = "/video/{id}/data", method = RequestMethod.GET)
@@ -88,22 +101,6 @@ public class VideoController {
 //        }
 //
 //        return status;
-//    }
-
-//    /**
-//     * Формирует полную ссылку для последующего доступа к записи
-//     * @param video Объект, для которого формируется ссылка
-//     */
-//    private void generateUrl(Video video) {
-//        String url = getUrlBaseForLocalServer() + "/video/" + video.getId() + "/data";
-//        video.setDataUrl(url);
-//    }
-
-//    private String getUrlBaseForLocalServer() {
-//        HttpServletRequest request =
-//                ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-//        return "http://"+request.getServerName()
-//                + ((request.getServerPort() != 80) ? ":"+request.getServerPort() : "");
 //    }
 
 }
