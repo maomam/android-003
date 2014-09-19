@@ -9,7 +9,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.security.Principal;
 import java.util.Collection;
+import java.util.Set;
 
 @Controller
 public class VideoController {
@@ -71,49 +73,35 @@ public class VideoController {
         return videoRepository.findByDurationLessThan(duration);
     }
 
+    @RequestMapping(value = VideoSvcApi.VIDEO_SVC_PATH + "/{id}/like", method = RequestMethod.POST)
+    public void likeVideo(
+            @PathVariable("id") long id,
+            Principal p,
+            HttpServletResponse response) {
 
-//    @RequestMapping(value = "/video/{id}/data", method = RequestMethod.GET)
-//    public void getVideoData(
-//            @PathVariable("id") long id,
-//            HttpServletResponse response) {
-//        // Смотрим, есть ли такая запись
-//        Video video = videos.get(id);
-//        if (null == video) {
-//            response.setStatus(404);
-//        } else {
-//            try {
-//                VideoFileManager.get().copyVideoData(video, response.getOutputStream());
-//                response.setStatus(200);
-//            } catch (IOException e) {
-//                if (e instanceof FileNotFoundException) {
-//                    response.setStatus(404);
-//                } else {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//    }
+        Video video = videoRepository.findOne(id);
 
-//    @Multipart
-//    @ResponseBody
-//    @RequestMapping(value = "video/{id}/data", method = RequestMethod.POST)
-//    public VideoStatus addVideoData(
-//            @PathVariable("id") long id,
-//            @RequestParam("data") MultipartFile data,
-//            HttpServletResponse response) throws IOException {
-//
-//        VideoStatus status = null;
-//
-//        // Проверяем, есть ли метаданные для такого видео
-//        Video video = videos.get(id);
-//        if (null == video) {
-//            response.setStatus(404);
-//        } else {
-//            VideoFileManager.get().saveVideoData(video, data.getInputStream());
-//            status = new VideoStatus(VideoStatus.VideoState.READY);
-//        }
-//
-//        return status;
-//    }
+        // Смотрим, есть ли такое видео
+        if (null == video) {
+            response.setStatus(404);
+            return;
+        }
+
+        // если есть - достаём список пользователей,
+        // которые уже проглосовали, и проверяем, голосовал ли он уже?
+        Set<String> likesUsernames = video.getLikesUsernames();
+
+        String username = p.getName();
+
+        if (likesUsernames.contains(username)) {
+            response.setStatus(400);
+        } else {
+            likesUsernames.add(username);
+            video.setLikesUsernames(likesUsernames);
+            video.setLikes( likesUsernames.size() );
+            videoRepository.save(video);
+        }
+
+    }
 
 }

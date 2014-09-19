@@ -2,10 +2,9 @@ package org.magnum.mobilecloud.video.repository;
 
 import com.google.common.base.Objects;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A simple object to represent a video and its URL for viewing.
@@ -28,6 +27,9 @@ public class Video {
     @GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 
+    @ElementCollection
+    private Set<String> likesUsernames;
+
 	private String name;
 	private String url;
 	private long duration;
@@ -42,6 +44,7 @@ public class Video {
 		this.url = url;
 		this.duration = duration;
 		this.likes = likes;
+        this.likesUsernames = new HashSet<>();
 	}
 
 	public String getName() {
@@ -113,4 +116,11 @@ public class Video {
 		}
 	}
 
+    public Set<String> getLikesUsernames() {
+        return likesUsernames;
+    }
+
+    public void setLikesUsernames(Set<String> likesUsernames) {
+        this.likesUsernames = likesUsernames;
+    }
 }
