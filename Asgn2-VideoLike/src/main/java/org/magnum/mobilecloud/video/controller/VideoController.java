@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
@@ -132,7 +133,7 @@ public class VideoController {
 
             likesUsernames.remove(username);
             video.setLikesUsernames(likesUsernames);
-            video.setLikes( likesUsernames.size() );
+            video.setLikes(likesUsernames.size());
             videoRepository.save(video);
 
         } else {
@@ -140,6 +141,25 @@ public class VideoController {
             response.setStatus(400);
 
         }
+
+    }
+
+    @ResponseBody
+    @RequestMapping(value = VideoSvcApi.VIDEO_SVC_PATH + "/{id}/likedby", method = RequestMethod.GET)
+    public Collection<String> getUsersWhoLikedVideo(
+            @PathVariable("id") long id,
+            HttpServletResponse response) {
+
+        Collection<String> userNames = new ArrayList<>();
+        Video video = videoRepository.findOne(id);
+
+        if (null == video) {
+            response.setStatus(404);
+        } else {
+            userNames.addAll(video.getLikesUsernames());
+        }
+
+        return userNames;
 
     }
 
