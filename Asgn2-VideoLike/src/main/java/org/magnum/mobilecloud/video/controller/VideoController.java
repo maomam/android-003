@@ -59,6 +59,13 @@ public class VideoController {
 
     }
 
+    @ResponseBody
+    @RequestMapping(value = VideoSvcApi.VIDEO_TITLE_SEARCH_PATH, method = RequestMethod.GET)
+    public Collection<Video> findByTitle(@RequestParam("title") String title) {
+        return videoRepository.findByName(title);
+    }
+
+
 //    @RequestMapping(value = "/video/{id}/data", method = RequestMethod.GET)
 //    public void getVideoData(
 //            @PathVariable("id") long id,
