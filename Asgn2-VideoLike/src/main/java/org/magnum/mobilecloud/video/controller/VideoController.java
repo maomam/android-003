@@ -94,12 +94,51 @@ public class VideoController {
         String username = p.getName();
 
         if (likesUsernames.contains(username)) {
+
             response.setStatus(400);
+
         } else {
+
             likesUsernames.add(username);
             video.setLikesUsernames(likesUsernames);
             video.setLikes( likesUsernames.size() );
             videoRepository.save(video);
+
+        }
+
+    }
+
+    @RequestMapping(value = VideoSvcApi.VIDEO_SVC_PATH + "/{id}/unlike", method = RequestMethod.POST)
+    public void unlikeVideo(
+            @PathVariable("id") long id,
+            Principal p,
+            HttpServletResponse response) {
+
+        Video video = videoRepository.findOne(id);
+
+        // Смотрим, есть ли такое видео
+        if (null == video) {
+            response.setStatus(404);
+            return;
+        }
+
+        // если есть - достаём список пользователей,
+        // которые уже проглосовали, и проверяем, голосовал ли он уже?
+        Set<String> likesUsernames = video.getLikesUsernames();
+
+        String username = p.getName();
+
+        if (likesUsernames.contains(username)) {
+
+            likesUsernames.remove(username);
+            video.setLikesUsernames(likesUsernames);
+            video.setLikes( likesUsernames.size() );
+            videoRepository.save(video);
+
+        } else {
+
+            response.setStatus(400);
+
         }
 
     }
