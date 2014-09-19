@@ -61,8 +61,14 @@ public class VideoController {
 
     @ResponseBody
     @RequestMapping(value = VideoSvcApi.VIDEO_TITLE_SEARCH_PATH, method = RequestMethod.GET)
-    public Collection<Video> findByTitle(@RequestParam("title") String title) {
+    public Collection<Video> findByTitle(@RequestParam(VideoSvcApi.TITLE_PARAMETER) String title) {
         return videoRepository.findByName(title);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = VideoSvcApi.VIDEO_DURATION_SEARCH_PATH, method = RequestMethod.GET)
+    public Collection<Video> findByDurationLessThan(@RequestParam(VideoSvcApi.DURATION_PARAMETER) long duration) {
+        return videoRepository.findByDurationLessThan(duration);
     }
 
 
